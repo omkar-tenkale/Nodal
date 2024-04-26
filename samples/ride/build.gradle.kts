@@ -42,6 +42,8 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.koin)
+
+                implementation(project(":nodal"))
             }
         }
         val androidMain by getting {
@@ -50,13 +52,10 @@ kotlin {
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.androidx.appcompat)
+                implementation(libs.koin.android)
             }
         }
-//        val iosMain by getting {
-//            dependencies {
-//                implementation(libs.ktor.client.darwin)
-//            }
-//        }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
@@ -66,7 +65,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.jetbrains.kmpapp"
+    namespace = "dev.omkartenkale.nodal.sample.ride"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -74,7 +73,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.jetbrains.kmpapp"
+        applicationId = "dev.omkartenkale.nodal.sample.ride"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

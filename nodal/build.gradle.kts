@@ -1,10 +1,17 @@
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinxSerialization)
     id("module.publication")
 }
 
 kotlin {
+    explicitApi()
+    explicitApi = ExplicitApiMode.Strict
+
     targetHierarchy.default()
     jvm()
     androidTarget {
@@ -18,12 +25,30 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    linuxX64()
+//    linuxX64()
 
     sourceSets {
+        val androidMain by getting {
+            dependencies {
+                implementation(project.dependencies.platform(libs.compose.bom))
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.appcompat)
+                implementation(libs.compose.ui.tooling.preview)
+            }
+        }
         val commonMain by getting {
             dependencies {
-                //put your multiplatform dependencies here
+                implementation(libs.koin.core)
+                implementation(libs.kotlin.coroutines)
+                implementation(libs.kotlinx.serialization.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.atomicfu)
+
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.components.resources)
+
             }
         }
         val commonTest by getting {
