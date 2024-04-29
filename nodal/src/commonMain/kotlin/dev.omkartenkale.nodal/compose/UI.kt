@@ -3,6 +3,9 @@ package dev.omkartenkale.nodal.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.Node.Companion.ui
+import dev.omkartenkale.nodal.util.doOnRemoved
 import kotlinx.coroutines.flow.MutableStateFlow
 
 public class UI {
@@ -18,7 +21,9 @@ public class UI {
     }
 
     public fun draw(content: @Composable () -> Unit): Layer {
-        return Layer(content).also {
+        return Layer(content) {
+            layers.remove(it)
+        }.also {
             layers.add(it)
         }
     }
@@ -27,8 +32,7 @@ public class UI {
         focusState.emit(isFocused)
     }
 
-    public class Layer(public val content: @Composable () -> Unit) {
-        internal lateinit var onDestroy: () -> Unit
+    public class Layer(public val content: @Composable () -> Unit, internal val onDestroy: (Layer)->Unit) {
 
         @Composable
         public fun draw() {
@@ -36,7 +40,12 @@ public class UI {
         }
 
         public fun destroy() {
-            onDestroy()
+            onDestroy(this)
         }
     }
+}
+
+public fun Node.draw(content: @Composable () -> Unit) {
+    val layer = ui.draw(content)
+    doOnRemoved { layer.destroy() }
 }

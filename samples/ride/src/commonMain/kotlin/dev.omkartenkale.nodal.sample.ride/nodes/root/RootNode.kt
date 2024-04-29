@@ -9,26 +9,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.Node.Companion.ui
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.util.doOnRemoved
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class RootNode: Node() {
-
+class RootNode : Node() {
     override fun onAdded() {
-
-        dependencies.get<UI>().draw {
+        draw{
             Content()
         }
-
         coroutineScope.launch {
-            delay(2000)
+            delay(1000)
             addChild<LoginNode>()
+            delay(2000)
+            removeSelf()
         }
     }
 
     @Composable
-    fun Content(){
-        Box(modifier = Modifier.width(100.dp).height(100.dp).background(Color.Black))
+    fun Content() {
+        Box(modifier = Modifier.width(600.dp).height(100.dp).background(Color.Black))
     }
 }

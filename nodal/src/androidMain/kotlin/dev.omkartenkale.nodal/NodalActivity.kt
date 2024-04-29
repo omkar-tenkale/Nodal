@@ -9,8 +9,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.lifecycleScope
 import dev.omkartenkale.nodal.Node.Companion.createRootNode
 import dev.omkartenkale.nodal.compose.UI
-import dev.omkartenkale.nodal.misc.RemovalRequest
+import dev.omkartenkale.nodal.util.RootNodeUtil
 import kotlinx.coroutines.launch
+import kotlin.reflect.KClass
 
 public abstract class NodalActivity : AppCompatActivity() {
 
@@ -19,6 +20,12 @@ public abstract class NodalActivity : AppCompatActivity() {
     protected inline fun <reified T : Node> setContentNode(
         container: FrameLayout = findViewById(android.R.id.content),
         noinline dependencyDeclaration: DependencyDeclaration = {},
+    ): Unit = setContentNode(T::class, container, dependencyDeclaration)
+
+    protected fun setContentNode(
+        klass: KClass<out Node>,
+        container: FrameLayout = findViewById(android.R.id.content),
+        dependencyDeclaration: DependencyDeclaration = {},
     ) {
 //        val finalNodeConfigBuilder: NodeConfigBuilder = {
 //            param<RemovalRequest>(RemovalRequest{ finish() })
@@ -28,9 +35,11 @@ public abstract class NodalActivity : AppCompatActivity() {
 //            apply(nodeConfigBuilder)
 //        }
 
-        contentNode = createRootNode<T>{
+        contentNode = createRootNode(
+            klass = klass,
+            nodalConfig = NodalConfig(true),
+            onRequestRemove = { finish() }) {
 //            provides<Timber> { Timber()  }
-//            provides<TreeVisualiser> { TreeVisualiser()  }
 //            provides<StringProvider> { StringProvider()  }
 //            provides<AnalyticsLogger> { AnalyticsLogger()  }
 //            provides<KoroutineDispatcher> { KoroutineDispatcher()  }
@@ -52,19 +61,17 @@ public abstract class NodalActivity : AppCompatActivity() {
 //
 //            providesSelf<RemovalRequest>(RemovalRequest{ finish() })
 
-            provides<NodalConfig>{ NodalConfig(true) }
-            provides<OnBackPressedDispatcher>{ onBackPressedDispatcher }
-            provides<UI>{ UI().also {
-                ui = it
-                container.addView(ComposeView(this@NodalActivity).also { setContent { ui.drawLayers() } })
-            } }
-            providesSelf<RemovalRequest> {
-                RemovalRequest {
-                    finish()
+            provides<OnBackPressedDispatcher> { onBackPressedDispatcher }
+            provides<UI> {
+                UI().also {
+                    ui = it
+                    container.addView(ComposeView(this@NodalActivity).also { setContent { ui.drawLayers() } })
                 }
             }
             include(dependencyDeclaration)
-        }.apply { dispatchAdded() }
+        }.also {
+            RootNodeUtil.dispatchAdded(it)
+        }
         container.addView(ComposeView(this).also { setContent { ui.drawLayers() } })
     }
 
@@ -92,7 +99,7 @@ public abstract class NodalActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (::contentNode.isInitialized) {
-            contentNode.dispatchRemoved()
+            RootNodeUtil.dispatchRemoved(contentNode)
         }
     }
 }

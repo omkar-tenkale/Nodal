@@ -10,31 +10,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.util.child
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LoginNode: Node() {
-
     override fun onAdded() {
-        dependencies.get<UI>().apply {
-            draw {
-                Content()
-            }
-            focusState.onEach {
-                println("In Focus: $it")
-            }.launchIn(coroutineScope)
+        draw {
+            Content()
         }
+
+        ui.focusState.onEach {
+            println("In Focus: $it")
+        }.launchIn(coroutineScope)
 
         coroutineScope.launch {
             delay(1000)
             removeSelf()
         }
     }
-
     @Composable
     fun Content(){
-        Box(modifier = Modifier.width(200.dp).height(200.dp).background(Color.Red))
+        Box(modifier = Modifier.width(200.dp).height(100.dp).background(Color.Red))
     }
 }
