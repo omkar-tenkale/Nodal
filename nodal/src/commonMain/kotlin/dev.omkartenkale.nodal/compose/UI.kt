@@ -1,8 +1,10 @@
 package dev.omkartenkale.nodal.compose
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.Node.Companion.ui
 import dev.omkartenkale.nodal.util.doOnRemoved
@@ -20,7 +22,7 @@ public class UI {
         }
     }
 
-    public fun draw(content: @Composable () -> Unit): Layer {
+    public fun draw(content: @Composable (Modifier) -> Unit): Layer {
         return Layer(content) {
             layers.remove(it)
         }.also {
@@ -32,11 +34,11 @@ public class UI {
         focusState.emit(isFocused)
     }
 
-    public class Layer(public val content: @Composable () -> Unit, internal val onDestroy: (Layer)->Unit) {
+    public class Layer(public val content: @Composable (Modifier) -> Unit, internal val onDestroy: (Layer)->Unit) {
 
         @Composable
         public fun draw() {
-            content()
+            content(Modifier.fillMaxSize())
         }
 
         public fun destroy() {
@@ -45,7 +47,7 @@ public class UI {
     }
 }
 
-public fun Node.draw(content: @Composable () -> Unit) {
+public fun Node.draw(content: @Composable (Modifier) -> Unit) {
     val layer = ui.draw(content)
     doOnRemoved { layer.destroy() }
 }

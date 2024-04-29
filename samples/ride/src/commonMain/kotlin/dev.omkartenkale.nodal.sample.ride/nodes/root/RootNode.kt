@@ -12,20 +12,22 @@ import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.Node.Companion.ui
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.misc.Callback
+import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.addLoggedInNode
+import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedout.addLoggedOutNode
 import dev.omkartenkale.nodal.util.doOnRemoved
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+class LoggedInCallback(block: (String)-> Unit): Callback<String> by Callback(block)
 
 class RootNode : Node() {
     override fun onAdded() {
         draw{
             Content()
         }
-        coroutineScope.launch {
-            delay(1000)
-            addChild<LoginNode>()
-            delay(2000)
-            removeSelf()
+        addLoggedOutNode { userName ->
+            addLoggedInNode(userName)
         }
     }
 

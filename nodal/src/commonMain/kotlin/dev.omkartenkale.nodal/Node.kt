@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 
 internal val nodeId = atomic(0)
@@ -29,7 +30,7 @@ internal val nodeId = atomic(0)
 public open class Node {
 
     private lateinit var _scope: Scope
-    protected val dependencies: Scope
+    public val dependencies: Scope
         get() = if (::_scope.isInitialized) {
             _scope
         } else error("Accessing dependencies in init block is not supported, Wrap with doOnInit{ .. }")
@@ -65,10 +66,10 @@ public open class Node {
     public var coroutineScope: CoroutineScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    protected inline fun <reified T : Node> addChild(noinline dependencyDeclaration: DependencyDeclaration = {}): T =
+    public inline fun <reified T : Node> addChild(noinline dependencyDeclaration: DependencyDeclaration = {}): T =
         addChild(T::class, dependencyDeclaration) as T
 
-    protected fun addChild(
+    public fun addChild(
         klass: KClass<out Node>, dependencyDeclaration: DependencyDeclaration
     ): Node {
         if (isDead) {
@@ -132,7 +133,7 @@ public open class Node {
     public fun removeSelf(): Unit = dependencies.get<RemovalRequest>().invoke(this)
 
     public companion object {
-        protected inline fun <reified T : Any> Node.dependencies(): Lazy<T> = lazy {
+        public inline fun <reified T : Any> Node.dependencies(): Lazy<T> = lazy {
             dependencies.get<T>()
         }.also {
             doOnInit {

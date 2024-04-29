@@ -38,6 +38,7 @@ kotlin-coroutines =  { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-atomicfu = { group = "org.jetbrains.kotlinx", name = "atomicfu", version.ref = "kotlinx-atomicfu" }
+flexible-sheet = { group = "com.github.skydoves", name = "flexible-bottomsheet-material", version = "0.1.2" }
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
