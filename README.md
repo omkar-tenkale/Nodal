@@ -1,8 +1,8 @@
-[![official project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-
-# Multiplatform library template
+# Nodal
 
 ## What is it?
+
+TODO ---
 
 It is the barebones library project intended to quickly bootstrap a Kotlin Multiplatform library, that is deployable to Maven Central.
 
