@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.ActiveRideNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.CompletedRide
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.addActiveRideNode
@@ -21,13 +23,16 @@ import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resou
 import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.google_map
 
 class RideNode: Node() {
+
+    private lateinit var layer: UI.Layer
+
     override fun onAdded() {
         childrenUpdatedEvents.onEach {
             if(children.isEmpty()){
                 removeSelf()
             }
         }.launchIn(coroutineScope)
-        ui.draw {
+        layer = ui.draw {
             Image(
                 modifier = it.clickable {
                     removeSelf()
@@ -57,5 +62,9 @@ class RideNode: Node() {
         children.filterIsInstance<ActiveRideNode>().forEach {
             removeChild(it)
         }
+    }
+
+    override fun onRemoved() {
+        layer.destroy()
     }
 }

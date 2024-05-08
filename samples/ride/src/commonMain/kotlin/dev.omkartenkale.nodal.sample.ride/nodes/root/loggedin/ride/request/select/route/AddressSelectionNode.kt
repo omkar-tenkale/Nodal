@@ -7,6 +7,7 @@ import androidx.compose.ui.layout.ContentScale
 import com.skydoves.flexible.bottomsheet.material.FlexibleBottomSheet
 import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
@@ -28,7 +29,7 @@ class AddressSelectionNode : Node() {
 
     override fun onAdded() {
 
-        ui.draw {
+        draw {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -41,7 +42,7 @@ class AddressSelectionNode : Node() {
                         removeSelf()
                     },
                     painter = painterResource(Res.drawable.address_selection),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     contentDescription = null
                 )
             }

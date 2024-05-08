@@ -4,11 +4,14 @@ package dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.sele
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import com.skydoves.flexible.bottomsheet.material.FlexibleBottomSheet
 import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
@@ -25,9 +28,10 @@ class PaymentModeSelectionCallback(block: (String)-> Unit): Callback<String> by 
 class PaymentModeSelectionNode : Node() {
 
     private val onPaymentModeSelected by dependencies<PaymentModeSelectionCallback>()
+    private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        ui.draw {
+        layer = ui.draw {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -35,15 +39,19 @@ class PaymentModeSelectionNode : Node() {
                 sheetState = nonExpandingSheetState(),
             ) {
                 Image(
-                    modifier = Modifier.clickable {
+                    modifier = Modifier.fillMaxWidth().clickable {
                         onPaymentModeSelected.invoke("CASH")
                         removeSelf()
                     },
                     painter = painterResource(Res.drawable.payment_methods),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     contentDescription = null
                 )
             }
         }
+    }
+
+    override fun onRemoved() {
+        layer.destroy()
     }
 }

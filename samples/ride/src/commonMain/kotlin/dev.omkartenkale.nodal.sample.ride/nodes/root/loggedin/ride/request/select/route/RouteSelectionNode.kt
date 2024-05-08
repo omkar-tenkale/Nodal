@@ -9,6 +9,8 @@ import androidx.compose.ui.layout.ContentScale
 import com.skydoves.flexible.bottomsheet.material.FlexibleBottomSheet
 import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 import dev.omkartenkale.nodal.Node
+import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
@@ -30,11 +32,11 @@ class RouteSelectionNode : Node() {
 
     private val onRouteSelected by dependencies<RouteSelectionCallback>()
 
+    private lateinit var layer: UI.Layer
 
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-
-        ui.draw {
+        layer = ui.draw {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -52,10 +54,14 @@ class RouteSelectionNode : Node() {
                         removeSelf()
                     },
                     painter = painterResource(Res.drawable.route_selection),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     contentDescription = null
                 )
             }
         }
+    }
+
+    override fun onRemoved() {
+        layer.destroy()
     }
 }

@@ -17,22 +17,21 @@ import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.addLoggedInNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedout.addLoggedOutNode
 import dev.omkartenkale.nodal.util.doOnRemoved
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LoggedInCallback(block: (String)-> Unit): Callback<String> by Callback(block)
 
 class RootNode : Node() {
     override fun onAdded() {
-        draw{
-            Content()
-        }
+        childrenUpdatedEvents.onEach {
+            if(children.isEmpty()){
+                removeSelf()
+            }
+        }.launchIn(coroutineScope)
         addLoggedOutNode { userName ->
             addLoggedInNode(userName)
         }
-    }
-
-    @Composable
-    fun Content() {
-        Box(modifier = Modifier.width(600.dp).height(100.dp).background(Color.Black))
     }
 }

@@ -14,7 +14,9 @@ public fun Node.doOnAdded(block: () -> Unit) {
 }
 
 public fun Node.doOnRemoved(block: () -> Unit) {
-    isAddedEvents.filter { it.not() }.onEach { block() }.launchIn(coroutineScope)
+    isAddedEvents.filter { it.not() }.onEach {
+        block()
+    }.launchIn(coroutineScope)
 }
 
 public inline fun <reified T : Node> Node.child(): T =

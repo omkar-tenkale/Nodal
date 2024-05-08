@@ -8,7 +8,8 @@ import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 fun nonExpandingSheetState() = rememberFlexibleBottomSheetState(
     confirmValueChange = {
         it != FlexibleSheetValue.FullyExpanded
-    }
+    },
+    isModal = true
 )
 
 @Composable

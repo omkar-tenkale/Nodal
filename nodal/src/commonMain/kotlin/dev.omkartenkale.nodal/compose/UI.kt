@@ -17,7 +17,7 @@ public class UI {
 
     @Composable
     public fun drawLayers() {
-        remember { layers }.forEach {
+        layers.forEach {
             it.draw()
         }
     }
@@ -49,5 +49,7 @@ public class UI {
 
 public fun Node.draw(content: @Composable (Modifier) -> Unit) {
     val layer = ui.draw(content)
-    doOnRemoved { layer.destroy() }
+    doOnRemoved {
+        layer.destroy()
+    }
 }
