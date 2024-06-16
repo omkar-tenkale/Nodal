@@ -12,12 +12,10 @@ import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.driver_arriving
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.driver_arriving
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.finding_driver
-
 class PrePickupNode() : Node(/*dismissible = false*/) {
 
     private lateinit var layer: UI.Layer

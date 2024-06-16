@@ -40,10 +40,10 @@ import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.selec
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.alwaysIntermediatelyExpandedSheetState
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.child
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.submit_button
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.submit_button
 
 data class RideRequest(
     val rideType: String,

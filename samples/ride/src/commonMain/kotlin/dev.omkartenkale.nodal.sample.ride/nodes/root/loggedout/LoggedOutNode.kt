@@ -19,11 +19,10 @@ import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.nodes.root.LoggedInCallback
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.signup
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.signup
-
 class OTPConfirmedCallback(block: (String) -> Unit) : Callback<String> by Callback(block)
 
 fun Node.addLoggedOutNode(onLoggedIn: (String) -> Unit) =

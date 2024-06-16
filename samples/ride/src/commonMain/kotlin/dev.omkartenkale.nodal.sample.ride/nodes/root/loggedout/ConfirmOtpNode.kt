@@ -24,10 +24,10 @@ import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import kotlinx.coroutines.launch
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.confirm_otp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.confirm_otp
 
 @ExperimentalResourceApi
 class ConfirmOtpNode : Node() {

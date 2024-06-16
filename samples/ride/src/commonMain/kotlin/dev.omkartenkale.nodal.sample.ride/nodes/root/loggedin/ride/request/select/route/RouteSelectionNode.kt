@@ -14,11 +14,10 @@ import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.route_selection
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.driver_arriving
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.route_selection
 
 data class SelectedRoute(val pickup: SelectedPickup, val destination: SelectedDestination)
 data class SelectedPickup(val address: String, val coordinates: Float)

@@ -17,11 +17,10 @@ import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.RideR
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.addRequestRideNode
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.google_map
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.google_map
-
 class RideNode: Node() {
 
     private lateinit var layer: UI.Layer

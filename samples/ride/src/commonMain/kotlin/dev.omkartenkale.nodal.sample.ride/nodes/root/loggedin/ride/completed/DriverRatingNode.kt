@@ -22,11 +22,10 @@ import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.VoidCallback
 import dev.omkartenkale.nodal.util.addChild
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.rate_driver
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.finding_driver
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.rate_driver
 
 class DriverRatedCallback(block: () -> Unit) : VoidCallback by VoidCallback(block)
 

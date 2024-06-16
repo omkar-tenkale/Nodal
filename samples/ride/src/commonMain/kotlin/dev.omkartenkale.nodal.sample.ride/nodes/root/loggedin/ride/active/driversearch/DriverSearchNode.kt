@@ -14,12 +14,10 @@ import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.alwaysIntermediatelyExpandedSheetState
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.finding_driver
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.finding_driver
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.google_map
-
 class DriverSearchNode() : Node() {
 
     private lateinit var layer: UI.Layer

@@ -21,11 +21,10 @@ import androidx.compose.ui.unit.dp
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.util.addChild
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.add_payment
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.add_payment
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.confirm_otp
 
 fun Node.addSelectedPaymentModeNode(onPaymentModeChanged: (String) -> Unit) =
     addChild<SelectedPaymentModeNode>(PaymentModeChangedCallback { onPaymentModeChanged(it) })

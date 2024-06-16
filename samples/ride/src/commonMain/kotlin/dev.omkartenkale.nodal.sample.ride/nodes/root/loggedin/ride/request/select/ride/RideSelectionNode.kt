@@ -24,11 +24,10 @@ import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.alwaysIntermediatelyExpandedSheetState
 import dev.omkartenkale.nodal.util.addChild
 import kotlinx.coroutines.launch
+import nodal.ride.generated.resources.Res
+import nodal.ride.generated.resources.ride_estimates
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.Res
-import org.jetbrains.kotlinx.multiplatform_library_template.ride.generated.resources.ride_estimates
-
 
 fun Node.addRideSelectionNode(rideSelectedCallback: (String) -> Unit) =
     addChild<RideSelectionNode>(RideBookedCallback { rideSelectedCallback(it) })
