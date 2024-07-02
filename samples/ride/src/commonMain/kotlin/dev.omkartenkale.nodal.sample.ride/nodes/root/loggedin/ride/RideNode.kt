@@ -4,6 +4,8 @@ package dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
@@ -26,11 +28,11 @@ class RideNode: Node() {
     private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        childrenUpdatedEvents.onEach {
-            if(children.isEmpty()){
-                removeSelf()
-            }
-        }.launchIn(coroutineScope)
+//        childrenUpdatedEvents.onEach {
+//            if(children.isEmpty()){
+//                removeSelf()
+//            }
+//        }.launchIn(coroutineScope)
         layer = ui.draw {
             Image(
                 modifier = it.clickable {

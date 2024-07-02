@@ -65,14 +65,13 @@ public abstract class NodalActivity : AppCompatActivity() {
             provides<UI> {
                 UI().also {
                     ui = it
-                    container.addView(ComposeView(this@NodalActivity).also { setContent { ui.drawLayers() } })
+                    container.addView(ComposeView(this@NodalActivity).also { setContent { ui.Content() } })
                 }
             }
             include(dependencyDeclaration)
         }.also {
             RootNodeUtil.dispatchAdded(it)
         }
-        container.addView(ComposeView(this).also { setContent { ui.drawLayers() } })
     }
 
     @CallSuper
