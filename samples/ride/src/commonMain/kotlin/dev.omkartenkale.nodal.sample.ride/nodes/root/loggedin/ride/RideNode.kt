@@ -6,23 +6,30 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.compose.transitions.BackstackTransition
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.ActiveRideNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.CompletedRide
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.addActiveRideNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.completed.addDriverRatingNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.RideRequest
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.addRequestRideNode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import nodal.ride.generated.resources.Res
 import nodal.ride.generated.resources.google_map
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import kotlin.time.Duration.Companion.seconds
+
 class RideNode: Node() {
 
     private lateinit var layer: UI.Layer
@@ -33,7 +40,7 @@ class RideNode: Node() {
 //                removeSelf()
 //            }
 //        }.launchIn(coroutineScope)
-        layer = ui.draw {
+        layer = ui.draw(TransitionSpec.Slide) {
             Image(
                 modifier = it.clickable {
                     removeSelf()
@@ -42,13 +49,17 @@ class RideNode: Node() {
                 contentScale = ContentScale.Crop,
                 contentDescription = null
             )
-        }
-        val rideActive = false // Random.nextBoolean()
+            LaunchedEffect(Unit){
+                delay(2.seconds)
 
-        if(rideActive){
-            addActiveRideNode(::onRideCompleted)
-        }else{
-            addRequestRideNode(::onRideRequested)
+                val rideActive = false // Random.nextBoolean()
+
+                if(rideActive){
+                    addActiveRideNode(::onRideCompleted)
+                }else{
+                    addRequestRideNode(::onRideRequested)
+                }
+            }
         }
     }
 

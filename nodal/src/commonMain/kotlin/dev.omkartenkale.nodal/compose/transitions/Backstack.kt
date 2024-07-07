@@ -142,7 +142,6 @@ internal fun  Backstack(
 @Composable internal fun Backstack(
     backstack: List<UI.Layer>,
     modifier: Modifier = Modifier,
-    transition: BackstackTransition = BackstackTransition.Slide
 ) {
-    Backstack(backstack, modifier, rememberTransitionController(transition))
+    Backstack(backstack, modifier, rememberTransitionController())
 }

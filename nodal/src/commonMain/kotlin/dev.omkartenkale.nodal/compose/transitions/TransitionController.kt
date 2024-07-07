@@ -18,13 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import dev.omkartenkale.nodal.compose.UI
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.core.context.stopKoin
 
 /**
  * Returns the default [AnimationSpec] used for [rememberTransitionController].
  */
-@Composable internal fun defaultBackstackAnimation(): AnimationSpec<Float> {
-    return TweenSpec(durationMillis = 200)
+@Composable
+internal fun defaultBackstackAnimation(): AnimationSpec<Float> {
+    return TweenSpec(durationMillis = 2000)
 }
 
 /**
@@ -36,16 +37,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
  * @param onTransitionStarting Callback that will be invoked before starting each transition.
  * @param onTransitionFinished Callback that will be invoked after each transition finishes.
  */
-@Composable internal fun rememberTransitionController(
-    transition: BackstackTransition = BackstackTransition.Slide,
-    animationSpec: AnimationSpec<Float> = defaultBackstackAnimation(),
+@Composable
+internal fun rememberTransitionController(
+//    transition: BackstackTransition = BackstackTransition.Slide,
+//    animationSpec: AnimationSpec<Float> = defaultBackstackAnimation(),
     onTransitionStarting: (from: List<UI.Layer>, to: List<UI.Layer>, TransitionDirection) -> Unit = { _, _, _ -> },
     onTransitionFinished: () -> Unit = {},
 ): TransitionController {
     val scope = rememberCoroutineScope()
     return remember { TransitionController(scope) }.also {
-        it.transition = transition
-        it.animationSpec = animationSpec
         it.onTransitionStarting = onTransitionStarting
         it.onTransitionFinished = onTransitionFinished
 
@@ -69,13 +69,11 @@ internal class TransitionController(
      */
     @Immutable
     private data class ActiveTransition<T : Any>(
-        val fromFrame: FrameController.BackstackFrame<T>,
-        val toFrame: FrameController.BackstackFrame<T>,
-        val popping: Boolean
+        val frames: List<FrameController.BackstackFrame<T>>,
+        val popping: Boolean,
+        val transitionSpec: TransitionSpec,
     )
 
-    internal var transition: BackstackTransition? by mutableStateOf(null)
-    internal var animationSpec: AnimationSpec<Float>? by mutableStateOf(null)
     internal var onTransitionStarting: ((from: List<UI.Layer>, to: List<UI.Layer>, TransitionDirection) -> Unit)?
             by mutableStateOf(null)
     internal var onTransitionFinished: (() -> Unit)? by mutableStateOf(null)
@@ -100,16 +98,7 @@ internal class TransitionController(
     private var activeTransition: ActiveTransition<UI.Layer>? by mutableStateOf(null)
 
     override val activeFrames: List<FrameController.BackstackFrame<UI.Layer>> by derivedStateOf {
-        activeTransition?.let { transition ->
-            if (transition.popping) {
-                displayedKeys.dropLast(1).map { FrameController.BackstackFrame(it) } + listOf(transition.toFrame, transition.fromFrame)
-            } else {
-                displayedKeys.dropLast(2).map { FrameController.BackstackFrame(it) } + listOf(
-                    transition.fromFrame,
-                    transition.toFrame
-                )
-            }
-        } ?: displayedKeys.map { FrameController.BackstackFrame(it) }
+        activeTransition?.frames ?: displayedKeys.map { FrameController.BackstackFrame(it) }
     }
 
     /**
@@ -149,42 +138,55 @@ internal class TransitionController(
      * Called when [updateBackstack] gets a new backstack with a new top frame while idle, or after a
      * transition if the [targetKeys]' top is not [displayedKeys]' top.
      */
-    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun animateTransition(fromKeys: List<UI.Layer>, toKeys: List<UI.Layer>) {
         check(activeTransition == null) { "Can only start transitioning while idle." }
 
-        val fromKey = fromKeys.last()
-        val toKey = toKeys.last()
-        val popping = toKey in fromKeys
+        val popping =  fromKeys.last() !in toKeys
+        val topFrame = if(popping) fromKeys.last() else toKeys.last()
+
         val progress = Animatable(0f)
 
-        val fromVisibility = derivedStateOf { 1f - progress.value }
-        val toVisibility = progress.asState()
+        val topFrameVisibility  = if(popping) derivedStateOf { 1f - progress.value } else progress.asState()
+        val bottomFrameVisibility = if(popping) progress.asState() else derivedStateOf { 1f - progress.value }
 
         // Wrap modifier functions in each their own recompose scope so that if they read the visibility
         // (or any other state) directly, the modified node will actually be updated.
-        val fromModifier = Modifier.composed {
-            with(fromKey.transition) {
-                modifierForScreen(fromVisibility, isTop = popping)
-            }
-        }
-        val toModifier = Modifier.composed {
-            with(toKey.transition) {
-                modifierForScreen(toVisibility, isTop = !popping)
+        val topModifier = Modifier.composed {
+            with(topFrame.transitionSpec.topTransition) {
+                modifierForScreen(topFrameVisibility, isTop = true)
             }
         }
 
+        val bottomModifier = Modifier.composed {
+            with(topFrame.transitionSpec.bottomTransition) {
+                modifierForScreen(bottomFrameVisibility, isTop = false)
+            }
+        }
+
+        val frames = mutableListOf<FrameController.BackstackFrame<UI.Layer>>();
+        if(popping){
+            frames.addAll(fromKeys.dropLast(1).map { FrameController.BackstackFrame(it, bottomModifier) })
+            frames.add(fromKeys.last().let { FrameController.BackstackFrame(it,topModifier) })
+        }else{
+            frames.addAll(fromKeys.map { FrameController.BackstackFrame(it, bottomModifier) })
+            frames.add(toKeys.last().let { FrameController.BackstackFrame(it,topModifier) })
+        }
+
         activeTransition = ActiveTransition(
-            fromFrame = FrameController.BackstackFrame(fromKey, fromModifier),
-            toFrame = FrameController.BackstackFrame(toKey, toModifier),
-            popping = popping
+            frames = frames,
+            popping = popping,
+            transitionSpec = topFrame.transitionSpec
         )
 
         val oldActiveKeys = displayedKeys
         displayedKeys = targetKeys
 
-        onTransitionStarting!!(oldActiveKeys, displayedKeys, if (popping) TransitionDirection.Backward else TransitionDirection.Forward)
-        progress.animateTo(1f, animationSpec!!)
+        onTransitionStarting!!(
+            oldActiveKeys,
+            displayedKeys,
+            if (popping) TransitionDirection.Backward else TransitionDirection.Forward
+        )
+        progress.animateTo(1f, topFrame.transitionSpec.animationSpec)
         activeTransition = null
         onTransitionFinished!!()
     }

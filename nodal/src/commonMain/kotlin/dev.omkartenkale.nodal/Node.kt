@@ -4,6 +4,7 @@ import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.exceptions.DisallowedNodeAdditionException
 import dev.omkartenkale.nodal.exceptions.NodeCreationException
 import dev.omkartenkale.nodal.lifecycle.ChildrenUpdatedEvent
+import dev.omkartenkale.nodal.misc.BackPressHandler
 import dev.omkartenkale.nodal.misc.RemovalRequest
 import dev.omkartenkale.nodal.misc.instantiate
 import dev.omkartenkale.nodal.plugin.NodalPlugin
@@ -144,6 +145,7 @@ public open class Node {
         }
 
         public val Node.ui: UI get() = dependencies.get<UI>()
+        public val Node.backPressHandler: BackPressHandler get() = dependencies.get<BackPressHandler>()
         private fun instantiateNode(
             klass: KClass<out Node>,
             parentScope: Scope,

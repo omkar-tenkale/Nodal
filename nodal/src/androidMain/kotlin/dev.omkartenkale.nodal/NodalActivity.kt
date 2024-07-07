@@ -1,7 +1,6 @@
 package dev.omkartenkale.nodal
 
 import android.widget.FrameLayout
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.setContent
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.lifecycleScope
 import dev.omkartenkale.nodal.Node.Companion.createRootNode
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.misc.BackPressHandler
 import dev.omkartenkale.nodal.util.RootNodeUtil
 import kotlinx.coroutines.launch
 import kotlin.reflect.KClass
@@ -61,7 +61,7 @@ public abstract class NodalActivity : AppCompatActivity() {
 //
 //            providesSelf<RemovalRequest>(RemovalRequest{ finish() })
 
-            provides<OnBackPressedDispatcher> { onBackPressedDispatcher }
+            provides<BackPressHandler> { DefaultBackPressHandler(onBackPressedDispatcher) }
             provides<UI> {
                 UI().also {
                     ui = it

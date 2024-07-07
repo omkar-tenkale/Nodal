@@ -12,6 +12,7 @@ import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.misc.Callback
+import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.alwaysIntermediatelyExpandedSheetState
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
 import nodal.ride.generated.resources.Res
@@ -40,7 +41,7 @@ class RouteSelectionNode : Node() {
                 onDismissRequest = {
                     removeSelf()
                 },
-                sheetState = nonExpandingSheetState(),
+                sheetState = alwaysIntermediatelyExpandedSheetState(),
             ) {
                 Image(
                     modifier = Modifier.clickable {

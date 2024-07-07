@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.transitions.BackstackTransition
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
+import dev.omkartenkale.nodal.misc.BackPressCallback
 import dev.omkartenkale.nodal.util.addChild
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.RideNode
 import kotlinx.coroutines.flow.launchIn
@@ -25,8 +28,10 @@ class MyAccountNode: Node() {
 
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-
-        layer = ui.draw {
+        backPressHandler.addBackPressCallback(BackPressCallback(isEnabled = true) {
+            removeSelf()
+        })
+        layer = ui.draw(TransitionSpec.Slide) {
             Column {
 
                 Image(

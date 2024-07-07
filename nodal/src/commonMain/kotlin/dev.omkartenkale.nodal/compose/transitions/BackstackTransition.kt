@@ -1,9 +1,14 @@
 package dev.omkartenkale.nodal.compose.transitions
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.foundation.background
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -11,6 +16,31 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.lerp
+
+// https://easings.net/#easeOutExpo
+internal val EaseOutExpoEasing = CubicBezierEasing(0.16f, 1f, 0.3f, 1f)
+public class TransitionSpec(
+    public val topTransition: BackstackTransition,
+    public val bottomTransition: BackstackTransition,
+    public val bottomOnTop: Boolean,
+    public val animationSpec: AnimationSpec<Float>,
+){
+    public companion object{
+        public val Slide: TransitionSpec = TransitionSpec(
+            topTransition = BackstackTransition.Top.HorizontalSlide,
+            bottomTransition = BackstackTransition.Bottom.HorizontalSlide,
+            bottomOnTop = false,
+            animationSpec = TweenSpec(durationMillis = 750, easing = EaseOutExpoEasing),
+        )
+        public val BottomSheet: TransitionSpec = TransitionSpec(
+            topTransition = BackstackTransition.Top.VerticalSlide,
+            bottomTransition = BackstackTransition.None,
+            bottomOnTop = false,
+            animationSpec = TweenSpec(durationMillis = 500, easing = EaseOutExpoEasing),
+        )
+    }
+}
 
 /**
  * Defines transitions for a [Backstack]. Transitions control how screens are rendered by returning
@@ -36,39 +66,116 @@ public fun interface BackstackTransition {
         isTop: Boolean
     ): Modifier
 
-    /**
-     * A simple transition that slides screens horizontally.
-     */
-    public object Slide : BackstackTransition {
-        override fun Modifier.modifierForScreen(
-            visibility: State<Float>,
-            isTop: Boolean
-        ): Modifier = then(PercentageLayoutOffset(
-            rawOffset = derivedStateOf { if (isTop) 1f - visibility.value else -1 + visibility.value }
-        ))
+    public object Top {
+        /**
+         * A simple transition that slides screens horizontally.
+         */
+        public object HorizontalSlide : BackstackTransition {
+            override fun Modifier.modifierForScreen(
+                visibility: State<Float>,
+                isTop: Boolean
+            ): Modifier = background(
+                Color.Black.copy(
+                    alpha = lerp(
+                        0f,
+                        0.7f,
+                        visibility.value
+                    )
+                )
+            ) then (PercentageLayoutOffset(
+                rawOffset = derivedStateOf { if (isTop) 1f - visibility.value else -1 + visibility.value }
+            ))
 
 
-        internal class PercentageLayoutOffset(private val rawOffset: State<Float>) :
-            LayoutModifier {
-            private val offset = { rawOffset.value.coerceIn(-1f..1f) }
+            internal class PercentageLayoutOffset(private val rawOffset: State<Float>) :
+                LayoutModifier {
+                private val offset = { rawOffset.value.coerceIn(-1f..1f) }
 
-            override fun MeasureScope.measure(
-                measurable: Measurable,
-                constraints: Constraints
-            ): MeasureResult {
-                val placeable = measurable.measure(constraints)
-                return layout(placeable.width, placeable.height) {
-                    placeable.place(offsetPosition(IntSize(placeable.width, placeable.height)))
+                override fun MeasureScope.measure(
+                    measurable: Measurable,
+                    constraints: Constraints
+                ): MeasureResult {
+                    val placeable = measurable.measure(constraints)
+                    return layout(placeable.width, placeable.height) {
+                        placeable.place(offsetPosition(IntSize(placeable.width, placeable.height)))
+                    }
                 }
+
+                internal fun offsetPosition(containerSize: IntSize) = IntOffset(
+                    // RTL is handled automatically by place.
+                    x = (containerSize.width * offset()).toInt(),
+                    y = 0
+                )
+
+                override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
             }
+        }
 
-            internal fun offsetPosition(containerSize: IntSize) = IntOffset(
-                // RTL is handled automatically by place.
-                x = (containerSize.width * offset()).toInt(),
-                y = 0
-            )
+        public object VerticalSlide : BackstackTransition {
+            override fun Modifier.modifierForScreen(
+                visibility: State<Float>,
+                isTop: Boolean
+            ): Modifier = then(PercentageLayoutOffset(
+                rawOffset = derivedStateOf { if (isTop) 1f - visibility.value else -1 + visibility.value }
+            ))
 
-            override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
+            internal class PercentageLayoutOffset(private val rawOffset: State<Float>) :
+                LayoutModifier {
+                private val offset = { rawOffset.value.coerceIn(-1f..1f) }
+
+                override fun MeasureScope.measure(
+                    measurable: Measurable,
+                    constraints: Constraints
+                ): MeasureResult {
+                    val placeable = measurable.measure(constraints)
+                    return layout(placeable.width, placeable.height) {
+                        placeable.place(offsetPosition(IntSize(placeable.width, placeable.height)))
+                    }
+                }
+
+                internal fun offsetPosition(containerSize: IntSize) = IntOffset(
+                    x = 0,
+                    y = (containerSize.height * offset()).toInt()
+                )
+
+                override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
+            }
+        }
+
+
+    }
+
+    public object Bottom {
+        public object HorizontalSlide : BackstackTransition {
+            override fun Modifier.modifierForScreen(
+                visibility: State<Float>,
+                isTop: Boolean //isTop is always false
+            ): Modifier = then (PercentageLayoutOffset(
+                rawOffset = derivedStateOf { if (isTop) 1f - visibility.value else -1 * lerp(0.1f, 0f, visibility.value)}
+            ))
+
+            internal class PercentageLayoutOffset(private val rawOffset: State<Float>) :
+                LayoutModifier {
+                private val offset = { rawOffset.value.coerceIn(-1f..1f) }
+
+                override fun MeasureScope.measure(
+                    measurable: Measurable,
+                    constraints: Constraints
+                ): MeasureResult {
+                    val placeable = measurable.measure(constraints)
+                    return layout(placeable.width, placeable.height) {
+                        placeable.place(offsetPosition(IntSize(placeable.width, placeable.height)))
+                    }
+                }
+
+                internal fun offsetPosition(containerSize: IntSize) = IntOffset(
+                    // RTL is handled automatically by place.
+                    x = (containerSize.width * offset()).toInt(),
+                    y = 0
+                )
+
+                override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
+            }
         }
     }
 
@@ -83,7 +190,7 @@ public fun interface BackstackTransition {
     }
 
     /**
-     * A simple transition that crossfades between screens.
+     * No transition
      */
     public object None : BackstackTransition {
         override fun Modifier.modifierForScreen(
@@ -92,7 +199,6 @@ public fun interface BackstackTransition {
         ): Modifier = this
     }
 }
-
 /**
  * Convenience function to make it easier to make composition transitions.
  */

@@ -10,6 +10,7 @@ import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.Node.Companion.ui
 import dev.omkartenkale.nodal.compose.transitions.Backstack
 import dev.omkartenkale.nodal.compose.transitions.BackstackTransition
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.util.doOnRemoved
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -21,8 +22,8 @@ public class UI {
         Backstack(backstack = layers)
     }
 
-    public fun draw(content: @Composable (Modifier) -> Unit): Layer {
-        return Layer(content = content) {
+    public fun draw(transitionSpec: TransitionSpec = TransitionSpec.Slide, content: @Composable (Modifier) -> Unit): Layer {
+        return Layer(transitionSpec = transitionSpec, content = content) {
             layers -= it
         }.also {
             layers += it
@@ -33,7 +34,7 @@ public class UI {
         focusState.emit(isFocused)
     }
 
-    public class Layer(public val transition: BackstackTransition = BackstackTransition.None, public val content: @Composable (Modifier) -> Unit, internal val onDestroy: (Layer)->Unit) {
+    public class Layer(public val transitionSpec: TransitionSpec, public val content: @Composable (Modifier) -> Unit, internal val onDestroy: (Layer)->Unit) {
 
         @Composable
         public fun Content() {
@@ -50,7 +51,7 @@ public class UI {
 private fun List<UI.Layer>.secondToTop(): UI.Layer? = if(size < 2 ) null else get(lastIndex-1)
 
 public fun Node.draw(content: @Composable (Modifier) -> Unit) {
-    val layer = ui.draw(content)
+    val layer = ui.draw(content = content)
     doOnRemoved {
         layer.destroy()
     }
