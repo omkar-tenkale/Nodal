@@ -37,7 +37,7 @@ class ConfirmOtpNode : Node() {
     private val onOtpConfirmed: OTPConfirmedCallback by dependencies()
 
     override fun onAdded() {
-         layer = ui.draw(TransitionSpec.BottomSheet) {
+         layer = ui.draw(TransitionSpec.None) {
 //             Box(Modifier.background(Color.Red).fillMaxSize()) {
                  val scope = rememberCoroutineScope()
                  val state = nonExpandingSheetState()

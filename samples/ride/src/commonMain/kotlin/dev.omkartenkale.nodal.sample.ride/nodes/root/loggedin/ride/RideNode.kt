@@ -21,6 +21,7 @@ import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.active.addAct
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.completed.addDriverRatingNode
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.RideRequest
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.request.addRequestRideNode
+import dev.omkartenkale.nodal.util.isAdded
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -40,7 +41,7 @@ class RideNode: Node() {
 //                removeSelf()
 //            }
 //        }.launchIn(coroutineScope)
-        layer = ui.draw(TransitionSpec.Slide) {
+        layer = ui.draw(TransitionSpec.Fade) {
             Image(
                 modifier = it.clickable {
                     removeSelf()
@@ -50,11 +51,9 @@ class RideNode: Node() {
                 contentDescription = null
             )
             LaunchedEffect(Unit){
-                delay(2.seconds)
-
                 val rideActive = false // Random.nextBoolean()
 
-                if(rideActive){
+                if(rideActive && isAdded){
                     addActiveRideNode(::onRideCompleted)
                 }else{
                     addRequestRideNode(::onRideRequested)

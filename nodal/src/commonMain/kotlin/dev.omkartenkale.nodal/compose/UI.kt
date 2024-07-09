@@ -22,7 +22,7 @@ public class UI {
         Backstack(backstack = layers)
     }
 
-    public fun draw(transitionSpec: TransitionSpec = TransitionSpec.Slide, content: @Composable (Modifier) -> Unit): Layer {
+    public fun draw(transitionSpec: TransitionSpec = TransitionSpec.None, content: @Composable (Modifier) -> Unit): Layer {
         return Layer(transitionSpec = transitionSpec, content = content) {
             layers -= it
         }.also {

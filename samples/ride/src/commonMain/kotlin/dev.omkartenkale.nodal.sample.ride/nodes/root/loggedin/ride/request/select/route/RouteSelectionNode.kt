@@ -11,6 +11,7 @@ import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.alwaysIntermediatelyExpandedSheetState
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
@@ -36,7 +37,7 @@ class RouteSelectionNode : Node() {
 
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-        layer = ui.draw {
+        layer = ui.draw(TransitionSpec.None) {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()

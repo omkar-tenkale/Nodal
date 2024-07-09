@@ -12,6 +12,7 @@ import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.misc.Callback
 import dev.omkartenkale.nodal.sample.ride.util.ui.bottomsheet.nonExpandingSheetState
 import dev.omkartenkale.nodal.util.addChild
@@ -30,7 +31,7 @@ class PaymentModeSelectionNode : Node() {
     private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        layer = ui.draw {
+        layer = ui.draw(TransitionSpec.None) {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()

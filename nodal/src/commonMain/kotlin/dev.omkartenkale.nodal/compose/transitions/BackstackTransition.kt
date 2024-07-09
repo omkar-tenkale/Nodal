@@ -4,10 +4,15 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
@@ -16,6 +21,7 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 
 // https://easings.net/#easeOutExpo
@@ -35,9 +41,21 @@ public class TransitionSpec(
         )
         public val BottomSheet: TransitionSpec = TransitionSpec(
             topTransition = BackstackTransition.Top.VerticalSlide,
+            bottomTransition = BackstackTransition.Bottom.VerticalSlide,
+            bottomOnTop = false,
+            animationSpec = TweenSpec(durationMillis = 500, easing = EaseOutExpoEasing),
+        )
+        public val Fade: TransitionSpec = TransitionSpec(
+            topTransition = BackstackTransition.Crossfade,
             bottomTransition = BackstackTransition.None,
             bottomOnTop = false,
             animationSpec = TweenSpec(durationMillis = 500, easing = EaseOutExpoEasing),
+        )
+        public val None: TransitionSpec = TransitionSpec(
+            topTransition = BackstackTransition.None,
+            bottomTransition = BackstackTransition.None,
+            bottomOnTop = false,
+            animationSpec = TweenSpec(durationMillis = 0),
         )
     }
 }
@@ -177,6 +195,41 @@ public fun interface BackstackTransition {
                 override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
             }
         }
+
+
+        public object VerticalSlide : BackstackTransition {
+            override fun Modifier.modifierForScreen(
+                visibility: State<Float>,
+                isTop: Boolean //isTop is always false
+            ): Modifier = background(Color.Black).scale(lerp(0.95f, 1f, visibility.value) )
+//                .then(PercentageLayoutOffset(
+//                    rawOffset = derivedStateOf { if (isTop) 1f - visibility.value else  lerp(0.05f, 0f, visibility.value) }
+//                ))
+                .clip(RoundedCornerShape(10.dp))
+
+            internal class PercentageLayoutOffset(private val rawOffset: State<Float>) :
+                LayoutModifier {
+                private val offset = { rawOffset.value.coerceIn(-1f..1f) }
+
+                override fun MeasureScope.measure(
+                    measurable: Measurable,
+                    constraints: Constraints
+                ): MeasureResult {
+                    val placeable = measurable.measure(constraints)
+                    return layout(placeable.width, placeable.height) {
+                        placeable.place(offsetPosition(IntSize(placeable.width, placeable.height)))
+                    }
+                }
+
+                internal fun offsetPosition(containerSize: IntSize) = IntOffset(
+                    x = 0,
+                    y = (containerSize.height * offset()).toInt()
+                )
+
+                override fun toString(): String = "${this::class.simpleName}(offset=$offset)"
+            }
+        }
+
     }
 
     /**
