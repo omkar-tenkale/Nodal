@@ -4,15 +4,14 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
@@ -56,6 +55,12 @@ public class TransitionSpec(
             bottomTransition = BackstackTransition.None,
             bottomOnTop = false,
             animationSpec = TweenSpec(durationMillis = 0),
+        )
+        public val Blur: TransitionSpec = TransitionSpec(
+            topTransition = BackstackTransition.None,
+            bottomTransition = BackstackTransition.Blur,
+            bottomOnTop = false,
+            animationSpec = TweenSpec(durationMillis = 500),
         )
     }
 }
@@ -240,6 +245,13 @@ public fun interface BackstackTransition {
             visibility: State<Float>,
             isTop: Boolean
         ): Modifier = alpha(visibility.value)
+    }
+
+    public object Blur : BackstackTransition {
+        override fun Modifier.modifierForScreen(
+            visibility: State<Float>,
+            isTop: Boolean
+        ): Modifier = blur(((1 - visibility.value) * 5).dp)
     }
 
     /**
