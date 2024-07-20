@@ -62,11 +62,10 @@ class RequestRideNode : Node() {
 
     var selectedRideType: String? = null
     var selectedPaymentMode: String? = null
-    private lateinit var layer: UI.Layer
 
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-        layer = ui.draw(TransitionSpec.Fade) {
+        draw(TransitionSpec.Fade) {
             var selectedRoute by remember { mutableStateOf<SelectedRoute?>(null) }
             LaunchedEffect(Unit) {
                 addRouteSelectionNode {
@@ -74,74 +73,74 @@ class RequestRideNode : Node() {
                 }
             }
             selectedRoute?.let {
-                FlexibleBottomSheet(
-                    onDismissRequest = {
-                        removeSelf()
-                    },
-                    sheetState =  rememberFlexibleBottomSheetState(
-                        confirmValueChange = {
-                            it != FlexibleSheetValue.Hidden
+                Column {
+                    FlexibleBottomSheet(
+                        onDismissRequest = {
+                            removeSelf()
                         },
-                        isModal = true
-                    )
-                ) {
-                    Column(modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .fillMaxSize()
-                        .weight(1f, fill = true)
-                        .background(Color.Red)) {
-
-                        Box(modifier = Modifier) {
-                            var rideSelectionNodeAdded by remember { mutableStateOf(false) }
-                            LaunchedEffect(Unit) {
-                                addRideSelectionNode {
-                                    selectedRideType = it
-                                }
-                                rideSelectionNodeAdded = true
-                            }
-                            if(rideSelectionNodeAdded){
-                                child<RideSelectionNode>().Content()
-                            }
-                        }
-
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            var selectedPaymentModeNodeAdded by remember { mutableStateOf(false) }
-                            LaunchedEffect(Unit) {
-                                addSelectedPaymentModeNode {
-                                    selectedPaymentMode = it
-                                }
-                                selectedPaymentModeNodeAdded = true
-                            }
-                            if(selectedPaymentModeNodeAdded) {
-                                child<SelectedPaymentModeNode>().Content()
-                            }
-                        }
-                        Image(
-                            modifier = Modifier.fillMaxWidth().clickable {
-                                selectedRideType?.let { selectedRideType ->
-                                    selectedPaymentMode?.let { selectedPaymentMode ->
-                                        requestRideCallback(
-                                            RideRequest(
-                                                selectedRideType,
-                                                it,
-                                                selectedPaymentMode
-                                            )
-                                        )
-                                        removeSelf()
-                                    }
-                                }
+                        sheetState = rememberFlexibleBottomSheetState(
+                            confirmValueChange = {
+                                it != FlexibleSheetValue.Hidden
                             },
-                            painter = painterResource(Res.drawable.submit_button),
-                            contentScale = ContentScale.FillWidth,
-                            contentDescription = null
+                            isModal = true
                         )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(rememberScrollState())
+                                .fillMaxSize()
+                                .weight(1f, fill = true)
+                                .background(Color.Red)
+                        ) {
+
+                            Box(modifier = Modifier) {
+                                var rideSelectionNodeAdded by remember { mutableStateOf(false) }
+                                LaunchedEffect(Unit) {
+                                    addRideSelectionNode {
+                                        selectedRideType = it
+                                    }
+                                    rideSelectionNodeAdded = true
+                                }
+                                if (rideSelectionNodeAdded) {
+                                    child<RideSelectionNode>().Content()
+                                }
+                            }
+
+                            Box(modifier = Modifier.fillMaxWidth()) {
+                                var selectedPaymentModeNodeAdded by remember { mutableStateOf(false) }
+                                LaunchedEffect(Unit) {
+                                    addSelectedPaymentModeNode {
+                                        selectedPaymentMode = it
+                                    }
+                                    selectedPaymentModeNodeAdded = true
+                                }
+                                if (selectedPaymentModeNodeAdded) {
+                                    child<SelectedPaymentModeNode>().Content()
+                                }
+                            }
+                            Image(
+                                modifier = Modifier.fillMaxWidth().clickable {
+                                    selectedRideType?.let { selectedRideType ->
+                                        selectedPaymentMode?.let { selectedPaymentMode ->
+                                            requestRideCallback(
+                                                RideRequest(
+                                                    selectedRideType,
+                                                    it,
+                                                    selectedPaymentMode
+                                                )
+                                            )
+                                            removeSelf()
+                                        }
+                                    }
+                                },
+                                painter = painterResource(Res.drawable.submit_button),
+                                contentScale = ContentScale.FillWidth,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

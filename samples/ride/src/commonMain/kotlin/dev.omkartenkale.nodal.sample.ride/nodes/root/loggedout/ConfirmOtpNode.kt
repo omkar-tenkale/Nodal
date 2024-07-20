@@ -33,11 +33,10 @@ import org.jetbrains.compose.resources.painterResource
 @ExperimentalResourceApi
 class ConfirmOtpNode : Node() {
 
-    private lateinit var layer: UI.Layer
     private val onOtpConfirmed: OTPConfirmedCallback by dependencies()
 
     override fun onAdded() {
-         layer = ui.draw(TransitionSpec.None) {
+         draw(TransitionSpec.None) {
 //             Box(Modifier.background(Color.Red).fillMaxSize()) {
                  val scope = rememberCoroutineScope()
                  val state = nonExpandingSheetState()
@@ -69,9 +68,5 @@ class ConfirmOtpNode : Node() {
                  }
 //             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 
@@ -121,9 +123,10 @@ public open class Node {
 
     public open fun onRemoved() {}
     internal fun dispatchRemoved() {
-        coroutineScope.launch {
+        coroutineScope.launch(Dispatchers.Unconfined) {
             onRemoved()
             _isAddedEvents.emit(false)
+            yield()
             children.forEach { it.dispatchRemoved() }
             coroutineScope.cancel()
             dependencies.close()

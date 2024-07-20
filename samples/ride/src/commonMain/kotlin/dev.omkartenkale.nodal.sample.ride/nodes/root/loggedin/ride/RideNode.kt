@@ -33,15 +33,13 @@ import kotlin.time.Duration.Companion.seconds
 
 class RideNode: Node() {
 
-    private lateinit var layer: UI.Layer
-
     override fun onAdded() {
 //        childrenUpdatedEvents.onEach {
 //            if(children.isEmpty()){
 //                removeSelf()
 //            }
 //        }.launchIn(coroutineScope)
-        layer = ui.draw(TransitionSpec.Fade) {
+        draw(TransitionSpec.Fade) {
             Image(
                 modifier = it.clickable {
                     removeSelf()
@@ -73,9 +71,5 @@ class RideNode: Node() {
         children.filterIsInstance<ActiveRideNode>().forEach {
             removeChild(it)
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

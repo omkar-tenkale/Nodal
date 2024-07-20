@@ -28,10 +28,9 @@ class PaymentModeSelectionCallback(block: (String)-> Unit): Callback<String> by 
 class PaymentModeSelectionNode : Node() {
 
     private val onPaymentModeSelected by dependencies<PaymentModeSelectionCallback>()
-    private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        layer = ui.draw(TransitionSpec.None) {
+        draw(TransitionSpec.None) {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -49,9 +48,5 @@ class PaymentModeSelectionNode : Node() {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

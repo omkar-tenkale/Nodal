@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.myaccoubt.MyAccountNode
 import dev.omkartenkale.nodal.util.addChild
 import dev.omkartenkale.nodal.sample.ride.nodes.root.loggedin.ride.RideNode
@@ -26,12 +27,10 @@ class LoggedInNode: Node() {
     class Args(val userName: String)
     private val args: Args by dependencies()
 
-    private lateinit var layer: UI.Layer
-
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
 
-        layer = ui.draw {
+        draw {
 
             println("LoggedInNode: Recompose")
             LaunchedEffect(Unit){
@@ -65,10 +64,5 @@ class LoggedInNode: Node() {
 //            }
 //        }.launchIn(coroutineScope)
 
-    }
-
-    override fun onRemoved() {
-        super.onRemoved()
-        layer.destroy()
     }
 }

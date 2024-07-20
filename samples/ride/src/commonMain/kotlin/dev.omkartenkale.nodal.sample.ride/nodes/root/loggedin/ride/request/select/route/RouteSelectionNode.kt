@@ -33,11 +33,9 @@ class RouteSelectionNode : Node() {
 
     private val onRouteSelected by dependencies<RouteSelectionCallback>()
 
-    private lateinit var layer: UI.Layer
-
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-        layer = ui.draw(TransitionSpec.None) {
+        draw(TransitionSpec.None) {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -60,9 +58,5 @@ class RouteSelectionNode : Node() {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

@@ -26,11 +26,8 @@ class AddressSelectionNode : Node() {
 
     private val onAddressSelected by dependencies<AddressSelectionCallback>()
 
-    private lateinit var layer: UI.Layer
-
     override fun onAdded() {
-
-        layer = ui.draw {
+        draw {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -48,10 +45,5 @@ class AddressSelectionNode : Node() {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        super.onRemoved()
-        layer.destroy()
     }
 }

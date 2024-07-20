@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
 import dev.omkartenkale.nodal.compose.draw
+import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.misc.VoidCallback
 import dev.omkartenkale.nodal.util.addChild
 import nodal.ride.generated.resources.Res
@@ -34,10 +35,9 @@ fun Node.addDriverRatingNode(onDriverRated: () -> Unit) =
 
 class DriverRatingNode : Node() {
     val driverRatedCallback: DriverRatedCallback by dependencies()
-    private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        layer = ui.draw {
+        draw(TransitionSpec.Slide) {
             var submitVisible by remember { mutableStateOf(false) }
             Column {
                 Image(
@@ -55,11 +55,6 @@ class DriverRatingNode : Node() {
                     }, color = Color.White)
                 }
             }
-
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

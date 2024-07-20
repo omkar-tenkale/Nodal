@@ -48,10 +48,8 @@ public class UI {
     }
 }
 
-private fun List<UI.Layer>.secondToTop(): UI.Layer? = if(size < 2 ) null else get(lastIndex-1)
-
-public fun Node.draw(content: @Composable (Modifier) -> Unit) {
-    val layer = ui.draw(content = content)
+public fun Node.draw(transitionSpec: TransitionSpec = TransitionSpec.None, content: @Composable (Modifier) -> Unit) {
+    val layer = ui.draw(transitionSpec = transitionSpec, content = content)
     doOnRemoved {
         layer.destroy()
     }

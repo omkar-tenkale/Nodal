@@ -33,10 +33,9 @@ fun Node.addLoggedOutNode(onLoggedIn: (String) -> Unit) =
 class LoggedOutNode : Node() {
 
     val onLoggedIn: LoggedInCallback by dependencies()
-    private lateinit var layer: UI.Layer
 
     override fun onAdded() {
-        layer = ui.draw {
+        draw {
             Box {
                 Image(
                     modifier = Modifier.fillMaxSize(),
@@ -57,9 +56,5 @@ class LoggedOutNode : Node() {
                 })
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

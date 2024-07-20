@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.omkartenkale.nodal.Node
 import dev.omkartenkale.nodal.compose.UI
+import dev.omkartenkale.nodal.compose.draw
 import dev.omkartenkale.nodal.compose.transitions.BackstackTransition
 import dev.omkartenkale.nodal.compose.transitions.TransitionSpec
 import dev.omkartenkale.nodal.misc.BackPressCallback
@@ -24,14 +25,12 @@ import org.jetbrains.compose.resources.painterResource
 
 class MyAccountNode: Node() {
 
-    private lateinit var layer: UI.Layer
-
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
         backPressHandler.addBackPressCallback(BackPressCallback(isEnabled = true) {
             removeSelf()
         })
-        layer = ui.draw(TransitionSpec.Slide) {
+        draw(TransitionSpec.Slide) {
             Column {
 
                 Image(
@@ -45,10 +44,5 @@ class MyAccountNode: Node() {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        super.onRemoved()
-        layer.destroy()
     }
 }

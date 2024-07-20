@@ -18,11 +18,9 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 class PrePickupNode() : Node(/*dismissible = false*/) {
 
-    private lateinit var layer: UI.Layer
-
     @OptIn(ExperimentalResourceApi::class)
     override fun onAdded() {
-        layer = ui.draw {
+        draw {
             FlexibleBottomSheet(
                 onDismissRequest = {
                     removeSelf()
@@ -45,9 +43,5 @@ class PrePickupNode() : Node(/*dismissible = false*/) {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }

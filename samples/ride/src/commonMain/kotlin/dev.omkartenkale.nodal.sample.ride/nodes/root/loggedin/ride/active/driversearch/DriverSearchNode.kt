@@ -20,10 +20,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 class DriverSearchNode() : Node() {
 
-    private lateinit var layer: UI.Layer
-
     override fun onAdded() {
-        layer = ui.draw {
+        draw {
             FlexibleBottomSheet(
                 onDismissRequest = {},
                 sheetState = rememberFlexibleBottomSheetState()
@@ -36,9 +34,5 @@ class DriverSearchNode() : Node() {
                 )
             }
         }
-    }
-
-    override fun onRemoved() {
-        layer.destroy()
     }
 }
