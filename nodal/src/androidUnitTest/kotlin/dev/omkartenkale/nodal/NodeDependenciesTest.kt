@@ -1,5 +1,6 @@
 package dev.omkartenkale.nodal
 
+import dev.omkartenkale.nodal.exceptions.DependencyNotFoundException
 import dev.omkartenkale.nodal.plugin.NodalPlugins
 import dev.omkartenkale.nodal.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,6 +80,43 @@ class NodeDependenciesTest {
                 }
                 cause = e.cause
             }
+        }
+    }
+
+    @Test
+    fun `verify providesSelf does not expose dependencies to children`(){
+        class Some
+        class NodeA: Node()
+
+        class RootNode : Node() {
+            val some: Some by dependencies<Some>()
+
+            override val providesDependencies: DependencyDeclaration = {
+                providesSelf<Some> {
+                    Some()
+                }
+            }
+        }
+
+        val rootNode = Node.createRootNode(
+            klass = RootNode::class,
+            nodalConfig = NodalConfig(createEagerInstances = true),
+            onRequestRemove = { }) {} as RootNode
+
+        val nodeA = rootNode.addChild<NodeA>()
+
+        assert(nodeA.dependencies.getOrNull<Some>() == null)
+    }
+
+    @Test
+    fun `verify get dependency should throw error if not available`(){
+        class Some
+        class RootNode : Node()
+
+        val rootNode = Node.createRootNode(klass = RootNode::class, onRequestRemove = { }) {} as RootNode
+
+        assertFailsWith(DependencyNotFoundException::class){
+            rootNode.dependencies.get<Some>()
         }
     }
 
