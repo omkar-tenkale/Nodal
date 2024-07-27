@@ -181,7 +181,7 @@ public open class Node {
 
         public fun createRootNode(
             klass: KClass<out Node>,
-            nodalConfig: NodalConfig,
+            nodalConfig: NodalConfig = NodalConfig(),
             onRequestRemove: (Node) -> Unit,
             plugins: List<NodalPlugin> = emptyList(),
             dependencyDeclaration: DependencyDeclaration,
