@@ -2,24 +2,30 @@ package dev.omkartenkale.nodal
 
 import dev.omkartenkale.nodal.Node.Companion.ui
 import dev.omkartenkale.nodal.exceptions.ChildNodeNotFoundException
+import dev.omkartenkale.nodal.exceptions.DependencyNotFoundException
 import dev.omkartenkale.nodal.exceptions.DisallowedNodeAdditionException
 import dev.omkartenkale.nodal.exceptions.NodeCreationException
 import dev.omkartenkale.nodal.util.MainDispatcherRule
+import dev.omkartenkale.nodal.util.assertNestedException
 import dev.omkartenkale.nodal.util.child
 import dev.omkartenkale.nodal.util.doOnAdded
 import dev.omkartenkale.nodal.util.doOnRemoved
 import dev.omkartenkale.nodal.util.isAdded
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
-class NodeTest {
+class NodeStateTest {
     class RootNode : Node()
     class ANode : Node()
     class BNode : Node()
@@ -79,6 +85,7 @@ class NodeTest {
         val nodeA = rootNode.addChild<ANode>()
         assert(nodeA.isDead.not())
     }
+
     @Test
     fun `verify child not found`() = runTest {
         assertFailsWith<ChildNodeNotFoundException> {
@@ -123,28 +130,50 @@ class NodeTest {
     @Test
     fun `verify node does not have ui dependency in unit tests`() = runTest {
         val nodeA = rootNode.addChild<ANode>()
-        assertFails {
+        assertFailsWith<DependencyNotFoundException> {
             nodeA.ui
         }
     }
-
 
     @Test
     fun `verify child cannot be added on a dead node`() = runTest {
         val nodeA = rootNode.addChild<ANode>()
         nodeA.removeSelf()
-        assertFailsWith(DisallowedNodeAdditionException::class){
+        assertFailsWith<DisallowedNodeAdditionException>{
             nodeA.addChild<ANode>()
         }
     }
 
     @Test
     fun `verify error is thrown when node could not be instantiated`() = runTest {
+        // node must be no arg
         class SomeNode(unit: Unit): Node()
 
-        assertFailsWith(NodeCreationException::class){
+        assertNestedException<NodeCreationException>{
             rootNode.addChild<SomeNode>()
+        }
+
+        // externally referenced value becomes constructor param at compile time
+        val accessedValue = Unit
+        class SomeOtherNode: Node(){
+            override fun onAdded() {
+                println(accessedValue)
+            }
+        }
+
+        assertNestedException<NodeCreationException>{
+            rootNode.addChild<SomeOtherNode>()
         }
     }
 
+    @Test
+    fun `verify onRemoved callback removes node`() = runTest {
+        class ChildNode: Node(){
+            override fun onAdded() {
+                removeSelf()
+            }
+        }
+        rootNode.addChild<ChildNode>()
+        assertTrue(rootNode.children.isEmpty())
+    }
 }

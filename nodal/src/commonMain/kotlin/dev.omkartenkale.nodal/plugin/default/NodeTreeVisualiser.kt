@@ -8,6 +8,16 @@ import dev.omkartenkale.nodal.plugin.NodeRemovedEvent
 internal class NodeTreeVisualiser: NodalPlugin {
     private var rootNode: Node? = null
 
+    companion object {
+        object Symbols {
+            const val ARM_RIGHT = "└── "
+            const val INTERSECTION = "├── "
+            const val LINE = "│   "
+            const val SPACE = "    "
+            const val NEWLINE = "\n"
+        }
+    }
+
     override fun onEvent(event: NodalPlugin.Event) {
         when(event){
             is NodeAddedEvent -> {
@@ -22,19 +32,44 @@ internal class NodeTreeVisualiser: NodalPlugin {
         }
     }
 
-    private fun Node.printHierarchy(depth: Int = 0, printQualifiedName: Boolean = false) {
-        val prefix = "    ".repeat(depth)
-        val name = if (printQualifiedName) this::class.qualifiedName else this::class.simpleName
-        println(
-            "$prefix├── $name"
-        )
+    private fun Node.printHierarchy(){
+        println(generateSubTreeRepresentation(this))
+    }
 
-        for (child in children.dropLast(1)) {
-            child.printHierarchy(depth + 1, printQualifiedName)
+    fun generateSubTreeRepresentation(node: Node, useQualifiedName: Boolean = false): String =
+        StringBuilder().run {
+            generateRouterSubtreeRecursive(node = node, useQualifiedName = useQualifiedName, stringBuilder = this)
+            toString()
         }
 
+    private fun generateRouterSubtreeRecursive(
+        node: Node,
+        prefix: String = "",
+        isTail: Boolean = true,
+        useQualifiedName: Boolean,
+        stringBuilder: StringBuilder
+    ) {
+        val nodeName = if (useQualifiedName) node::class.qualifiedName else
+            (node::class.simpleName ?: "Unknown")
+        stringBuilder.append(prefix + (if (isTail) Symbols.ARM_RIGHT else Symbols.INTERSECTION) + nodeName + Symbols.NEWLINE)
+        val children = node.children
+        for (i in 0 until children.size - 1) {
+            generateRouterSubtreeRecursive(
+                node = children[i],
+                prefix = prefix + if (isTail) Symbols.SPACE else Symbols.LINE,
+                isTail = false,
+                useQualifiedName = useQualifiedName,
+                stringBuilder = stringBuilder,
+            )
+        }
         if (children.isNotEmpty()) {
-            children.last().printHierarchy(depth + 1, printQualifiedName)
+            generateRouterSubtreeRecursive(
+                node = children[children.size - 1],
+                prefix = prefix + if (isTail) Symbols.SPACE else Symbols.LINE,
+                isTail = true,
+                useQualifiedName = useQualifiedName,
+                stringBuilder = stringBuilder
+            )
         }
     }
 }

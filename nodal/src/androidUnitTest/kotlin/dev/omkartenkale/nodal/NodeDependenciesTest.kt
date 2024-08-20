@@ -1,8 +1,12 @@
 package dev.omkartenkale.nodal
 
 import dev.omkartenkale.nodal.exceptions.DependencyNotFoundException
+import dev.omkartenkale.nodal.exceptions.DependencyRedeclarationException
+import dev.omkartenkale.nodal.exceptions.NodeCreationException
 import dev.omkartenkale.nodal.plugin.NodalPlugins
 import dev.omkartenkale.nodal.util.MainDispatcherRule
+import dev.omkartenkale.nodal.util.assertDoesNotThrowException
+import dev.omkartenkale.nodal.util.assertNestedException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
@@ -10,19 +14,16 @@ import kotlinx.coroutines.yield
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 import kotlin.test.fail
 
 class NodeDependenciesTest {
 
     @get:Rule
     val coroutineRule = MainDispatcherRule()
-
-    @Before
-    fun setUp() {
-
-    }
 
     @Test
     fun `verify node provides dependencies`() = runTest {
@@ -104,8 +105,7 @@ class NodeDependenciesTest {
             onRequestRemove = { }) {} as RootNode
 
         val nodeA = rootNode.addChild<NodeA>()
-
-        assert(nodeA.dependencies.getOrNull<Some>() == null)
+        assertEquals(null,nodeA.dependencies.getOrNull<Some>())
     }
 
     @Test
