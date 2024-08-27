@@ -1,5 +1,6 @@
 package dev.omkartenkale.nodal
 
+import dev.omkartenkale.nodal.exceptions.DependencyInstantiationException
 import dev.omkartenkale.nodal.exceptions.DependencyNotFoundException
 import dev.omkartenkale.nodal.exceptions.DependencyRedeclarationException
 import org.koin.core.KoinApplication
@@ -8,6 +9,7 @@ import org.koin.core.definition.BeanDefinition
 import org.koin.core.definition.Kind
 import org.koin.core.definition.indexKey
 import org.koin.core.error.DefinitionOverrideException
+import org.koin.core.error.InstanceCreationException
 import org.koin.core.error.NoDefinitionFoundException
 import org.koin.core.instance.ScopedInstanceFactory
 import org.koin.core.logger.Level
@@ -92,6 +94,8 @@ public class Scope(public val name: String, public val koinScope: KoinScope, pub
                 }
             }
             throw e
+        }catch (e: InstanceCreationException) {
+            throw DependencyInstantiationException(e)
         }
     }
 

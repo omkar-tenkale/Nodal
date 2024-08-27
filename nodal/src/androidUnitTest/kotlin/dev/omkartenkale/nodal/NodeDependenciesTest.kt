@@ -1,23 +1,15 @@
 package dev.omkartenkale.nodal
 
+import dev.omkartenkale.nodal.exceptions.DependencyInstantiationException
 import dev.omkartenkale.nodal.exceptions.DependencyNotFoundException
-import dev.omkartenkale.nodal.exceptions.DependencyRedeclarationException
-import dev.omkartenkale.nodal.exceptions.NodeCreationException
-import dev.omkartenkale.nodal.plugin.NodalPlugins
 import dev.omkartenkale.nodal.util.MainDispatcherRule
-import dev.omkartenkale.nodal.util.assertDoesNotThrowException
-import dev.omkartenkale.nodal.util.assertNestedException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.yield
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.fail
 
 class NodeDependenciesTest {
@@ -120,5 +112,33 @@ class NodeDependenciesTest {
         }
     }
 
+    @Test
+    fun `verify parameter dependency can be resolved`(){
+        class Foo(val value: Int)
+        class Bar(val foo: Foo)
+        class RootNode : Node()
+
+        val rootNode = Node.createRootNode(klass = RootNode::class, onRequestRemove = { }) {
+            provides { Foo(111) }
+            provides { Bar(get()) }
+        } as RootNode
+
+        assertEquals(rootNode.dependencies.get<Bar>().foo.value, 111)
+    }
+
+    @Test
+    fun `verify parameter dependency can be resolved if error`(){
+        class Foo
+        class Bar(val foo: Foo)
+        class RootNode : Node()
+
+        val rootNode = Node.createRootNode(klass = RootNode::class, onRequestRemove = { }) {
+            provides { Bar(get()) }
+        } as RootNode
+
+        assertFailsWith<DependencyInstantiationException>(){
+            rootNode.dependencies.get<Bar>().foo
+        }
+    }
 
 }
